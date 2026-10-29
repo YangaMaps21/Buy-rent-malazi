@@ -144,8 +144,7 @@ live = live.replace('One walkthrough video, up to 200 MB.', 'One walkthrough vid
 open(DIST + '/index.html', 'w').write(live)
 open(DIST + '/robots.txt', 'w').write('User-agent: *\nDisallow: /\n')
 open(DIST + '/vercel.json', 'w').write(json.dumps({
-  "cleanUrls": True, "trailingSlash": False,
-  "rewrites": [{"source": "/(.*)", "destination": "/index.html"}],
+    "rewrites": [{"source": "/(.*)", "destination": "/index.html"}],
   "headers": [{"source": "/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}, {"key": "X-Content-Type-Options", "value": "nosniff"}, {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"}]},
               {"source": "/img/(.*)", "headers": [{"key": "Cache-Control", "value": "public, max-age=31536000, immutable"}]}]
 }, indent=2))
