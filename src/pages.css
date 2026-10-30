@@ -165,3 +165,9 @@ html[lang="sw"] .terms-sw-note{display:block}
 .field input[type=date]{min-width:0}
 @media(max-width:850px){.search-fields.malazi-mode{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media(max-width:560px){.search-fields.malazi-mode{grid-template-columns:1fr 1fr}}
+/* property types */
+.size-input{display:flex;gap:6px}
+.size-input input{flex:1;min-width:0}
+.size-input select{width:auto;flex:none}
+.type-chip{background:#f1f4f8;color:var(--navy);font-weight:700;border-radius:99px;padding:4px 9px}
+.res-only[hidden]{display:none!important}

@@ -111,4 +111,9 @@ def transform(s, I):
     # round 7: language switch + Swahili note in terms
     r('<div class="nav-actions"><button class="sign"', '<div class="nav-actions"><div class="lang-switch" role="group" aria-label="Language"><button type="button" data-lang="en" class="on" aria-pressed="true" lang="en">EN</button><button type="button" data-lang="sw" aria-pressed="false" lang="sw">SW</button></div><button class="sign"')
     r('<nav class="terms-toc"', '<p class="terms-sw-note" lang="sw">Kwa sasa maelezo kamili ya masharti haya yako kwa Kiingereza. Toleo rasmi la Kiswahili litaongezwa baada ya ukaguzi wa kisheria.</p><nav class="terms-toc"')
+    # round 8: all property types: size field, home-only rows
+    r('<div class="form-row"><label for="new-bedrooms">Bedrooms</label>', '<div class="form-row res-only"><label for="new-bedrooms">Bedrooms</label>')
+    r('<div class="form-row"><label for="new-bathrooms">Bathrooms</label><input id="new-bathrooms" type="number" min="0" max="20" value="1"></div>',
+      '<div class="form-row res-only"><label for="new-bathrooms">Bathrooms</label><input id="new-bathrooms" type="number" min="0" max="20" value="1"></div>'
+      '<div class="form-row"><label for="new-size">Size</label><div class="size-input"><input id="new-size" type="number" min="0" step="any" placeholder="e.g. 5"><select id="new-size-unit" aria-label="Size unit"><option value="m2">m²</option><option value="acres">acres</option><option value="hectares">hectares</option></select></div></div>')
     return s

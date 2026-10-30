@@ -34,7 +34,7 @@
     const m = (r.listing_media || []).slice().sort((a, b) => a.position - b.position);
     const photos = m.filter(x => x.kind === 'photo').map(x => x.url), vid = m.find(x => x.kind === 'video');
     return { id: r.id, category: r.category, title: r.title, description: r.description || '', location: r.location, type: r.property_type,
-      beds: r.beds, baths: r.baths, more: r.max_guests ? `${r.max_guests} guests` : (r.size_m2 ? `${r.size_m2} m²` : ''),
+      beds: r.beds, baths: r.baths, more: r.max_guests ? `${r.max_guests} guests` : (r.size_value ? sizeText(r.size_value, r.size_unit) : (r.size_m2 ? `${r.size_m2} m²` : '')),
       amount: Number(r.price), price: priceText(r.category, Number(r.price)), image: photos[0] || r.cover_url || '', images: photos, video: vid ? vid.url : '',
       user: !!(me && r.owner_id === me.id), status: r.status, featured: !!(r.featured_until && new Date(r.featured_until) > new Date()), owner: r.owner_id };
   }
@@ -125,9 +125,9 @@
     if (vf && vf.size > 50 * 1024 * 1024) { toast('Video must be under 50 MB.'); return; }
     const btn = form.querySelector('button[type=submit]'); btn.disabled = true; toast('Uploading your listing…');
     try {
-      const guests = p.category === 'malazi' ? parseInt(p.more) || null : null;
+      const guests = p.category === 'malazi' && isHome(p.type) ? parseInt(p.more) || null : null;
       const { data: l, error } = await sb.from('listings').insert({ category: p.category, title: p.title, description: p.description || null, location: p.location,
-        property_type: p.type, beds: p.beds, baths: p.baths, price: p.amount, max_guests: guests }).select().single();
+        property_type: p.type, beds: p.beds, baths: p.baths, price: p.amount, max_guests: guests, size_value: p.size_value, size_unit: p.size_unit }).select().single();
       if (error) throw error;
       const rows = []; const photos = media.photos;
       for (let i = 0; i < photos.length; i++) {

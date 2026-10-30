@@ -155,7 +155,10 @@ const SW = {
  'Toggle menu': 'Fungua menyu', 'Back to top': 'Rudi juu', 'Agent photo placeholder': 'Nafasi ya picha ya wakala', 'Property details': 'Maelezo ya mali', 'Add a property': 'Ongeza mali',
  'Breadcrumb': 'Njia', 'Main': 'Kuu', 'Language': 'Lugha', 'e.g. Three-bedroom family home': 'mf. Nyumba ya familia ya vyumba vitatu', 'Briefly describe the property': 'Eleza mali kwa ufupi',
  'Agent or agency name': 'Jina la wakala au kampuni', 'Remove video': 'Ondoa video',
- 'Indian Ocean': 'Bahari ya Hindi', 'Msasani Bay': 'Ghuba ya Msasani', 'City Centre': 'Katikati ya Jiji'
+ 'Indian Ocean': 'Bahari ya Hindi',
+ 'Homes': 'Makazi', 'Land & farms': 'Ardhi na mashamba', 'Commercial': 'Biashara', 'Other': 'Nyingine', 'Townhouse': 'Nyumba ya safu', 'Bungalow': 'Bangalo', 'Studio': 'Studio', 'Room': 'Chumba',
+ 'Land / Plot': 'Kiwanja', 'Farm': 'Shamba', 'Beach plot': 'Kiwanja cha ufukweni', 'Office': 'Ofisi', 'Shop': 'Duka', 'Warehouse / Godown': 'Ghala', 'Commercial building': 'Jengo la biashara', 'Hotel / Lodge': 'Hoteli / Loji', 'Guest house': 'Nyumba ya wageni', 'Other property': 'Mali nyingine',
+ 'Size': 'Ukubwa', 'Size unit': 'Kipimo', 'acres': 'ekari', 'hectares': 'hekta', 'e.g. 5': 'mf. 5', 'Any property type': 'Aina yoyote ya mali', 'Msasani Bay': 'Ghuba ya Msasani', 'City Centre': 'Katikati ya Jiji'
 };
 const BADGE_SW = { 'For Sale': 'Inauzwa', 'For Rent': 'Inapangishwa', 'Malazi': 'Malazi' };
 const TYPE_SW = { House: 'Nyumba', Apartment: 'Fleti', Villa: 'Villa' };
@@ -170,7 +173,8 @@ const PATTERNS = [
   [/^Properties in (.+)$/, 'Mali katika $1'], [/^Properties for Sale in (.+)$/, 'Mali Zinazouzwa katika $1'], [/^Properties to Rent in (.+)$/, 'Nyumba za Kupanga katika $1'], [/^Malazi Stays in (.+)$/, 'Malazi katika $1'],
   [/^(\d+) sample listings$/, 'Matangazo $1 ya mfano'],
   [/^Showing (\d+) sample propert(?:y|ies)\. Illustrative listings for design preview only\.$/, 'Inaonyesha mali $1 za mfano. Matangazo ya mfano kwa onyesho la muundo tu.'],
-  [/^(House|Apartment|Villa) · (For Sale|For Rent|Malazi)$/, (m, t, b) => `${TYPE_SW[t]} · ${BADGE_SW[b]}`],
+  [/^(.+) · (For Sale|For Rent|Malazi)$/, (m, t, b) => `${SW[t] || TYPE_SW[t] || t} · ${BADGE_SW[b]}`],
+  [/^([\d.,]+) acres$/, 'Ekari $1'], [/^([\d.,]+) hectares$/, 'Hekta $1'],
   [/^(\d+) photos( · Video)?$/, (m, n, v) => `Picha ${n}${v ? ' · Video' : ''}`],
   [/^Save (.+)$/, 'Hifadhi $1'], [/^(.+): (\d+) properties$/, '$1: mali $2'], [/^Show photo (\d+)$/, 'Onyesha picha $1'], [/^Remove photo (\d+)$/, 'Ondoa picha $1'],
   [/^Enquiries open when live listings launch\. "(.+)" is a sample\.$/, 'Maulizo yatafunguliwa matangazo halisi yatakapoanza. "$1" ni tangazo la mfano.'],
@@ -197,7 +201,7 @@ const i18n = (() => {
     orig.set(n, raw); n.nodeValue = raw.replace(t, out);
   }
   function doAttrs(el) {
-    ['placeholder', 'aria-label', 'title'].forEach(a => {
+    ['placeholder', 'aria-label', 'title', 'label'].forEach(a => {
       const v = el.getAttribute && el.getAttribute(a); if (!v) return;
       const out = tr(v); if (out === null || out === v) return;
       const o = origAttr.get(el) || {}; if (!(a in o)) o[a] = v; origAttr.set(el, o); el.setAttribute(a, out);

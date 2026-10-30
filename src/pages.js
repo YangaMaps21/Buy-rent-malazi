@@ -14,6 +14,10 @@ allDemo.push(
   { id: 'a19', category: 'rent', photo: 'family-house', price: 'TSh 2,200,000 / month', title: 'Beachside Family Home', location: 'Kigamboni', type: 'House', beds: 4, baths: 3, more: '300 m²', amount: 2200000, description: 'Family home a short walk from the beach, with a secure parking yard.' },
   { id: 'a20', category: 'malazi', photo: 'bright-bedroom', price: 'TSh 220,000 / night', title: 'Ocean Terrace Suite', location: 'Masaki', type: 'Apartment', beds: 1, baths: 1, more: '2 guests', amount: 220000, description: 'A light-filled suite with a private terrace, perfect for couples.' },
   { id: 'a21', category: 'malazi', photo: 'beachfront-patio', price: 'TSh 450,000 / night', title: 'Kigamboni Beach House', location: 'Kigamboni', type: 'House', beds: 4, baths: 3, more: '8 guests', amount: 450000, description: 'Beachfront house for groups and families, with an open-air dining patio.' },
+  { id: 'a23', category: 'buy', photo: null, price: 'TSh 180,000,000', title: '5-Acre Farm with Borehole', location: 'Kigamboni', type: 'Farm', beds: 0, baths: 0, more: '5 acres', amount: 180000000, description: 'Fertile farmland with a borehole, perimeter fence and road access. Ideal for horticulture or poultry.' },
+  { id: 'a24', category: 'buy', photo: null, price: 'TSh 95,000,000', title: 'Residential Plot with Title Deed', location: 'Mbezi Beach', type: 'Land', beds: 0, baths: 0, more: '1,200 m²', amount: 95000000, description: 'Surveyed residential plot on a quiet road, title deed available.' },
+  { id: 'a25', category: 'rent', photo: null, price: 'TSh 4,500,000 / month', title: 'Office Space on Bagamoyo Road', location: 'Mikocheni', type: 'Office', beds: 0, baths: 2, more: '180 m²', amount: 4500000, description: 'Open-plan office floor with parking, backup generator and fibre internet.' },
+  { id: 'a26', category: 'rent', photo: null, price: 'TSh 6,000,000 / month', title: 'Warehouse / Godown', location: 'Kigamboni', type: 'Warehouse', beds: 0, baths: 1, more: '800 m²', amount: 6000000, description: 'Secure warehouse with loading bay and truck access.' },
   { id: 'a22', category: 'malazi', photo: 'city-living-room', price: 'TSh 120,000 / night', title: 'Upanga City Loft', location: 'Upanga', type: 'Apartment', beds: 1, baths: 1, more: '2 guests', amount: 120000, description: 'Smart city loft for business trips, close to the CBD.' }
 );
 
@@ -83,7 +87,7 @@ function catalogPage(cat, params) {
   page.innerHTML = pageHero(c.photo, ({ buy: 'For buyers', rent: 'For renters', malazi: 'Short stays' })[cat], c.title, c.intro, c.crumb, stats) + `
   <div class="container"><form class="filter-bar" id="${cat}-filters">
     ${sel(cat + '-loc', 'Location', opts([['', 'All areas'], ...AREAS_LIST.map(a => [a, a])], params.get('loc')))}
-    ${sel(cat + '-type', 'Property type', opts([['', 'Any type'], ['House', 'House'], ['Apartment', 'Apartment'], ['Villa', 'Villa']], params.get('type')))}
+    ${sel(cat + '-type', 'Property type', typeOptions('Any type', params.get('type')))}
     ${datesHTML}
     ${sel(cat + '-min', `Min price (TSh${c.unit})`, opts(P.min, params.get('min')))}
     ${sel(cat + '-max', `Max price (TSh${c.unit})`, opts(P.max, params.get('max')))}
@@ -248,7 +252,10 @@ function show(page) {
   if (page !== 'home') reveal($(`[data-page="${page}"]`));
   if (page === 'home') { renderHome(); renderMalazi(); }
 }
-function go(path) { if (PATH_MODE) { history.pushState({}, '', path); router(); } else location.hash = '#' + path; }
+function go(path) {
+  if (PATH_MODE) { if (location.pathname + location.search !== path) history.pushState({}, '', path); router(); }
+  else if (location.hash === '#' + path) router(); else location.hash = '#' + path;
+}
 if (PATH_MODE) {
   addEventListener('popstate', router);
   document.addEventListener('click', e => {

@@ -16,7 +16,33 @@ const io = 'IntersectionObserver' in window ? new IntersectionObserver(es => es.
 
 /* ---------- images from the registry ---------- */
 $$('img[data-img]').forEach(img => { const src = IMG[img.dataset.img]; if (src) img.src = src; });
-const photoSrc = p => p.image || IMG[PHOTO[p.photo]] || IMG[PHOTO['pool-villa']];
+/* ---------- property types ---------- */
+const TYPE_GROUPS = [
+  ['Homes', [['House', 'House'], ['Apartment', 'Apartment'], ['Villa', 'Villa'], ['Townhouse', 'Townhouse'], ['Bungalow', 'Bungalow'], ['Studio', 'Studio'], ['Room', 'Room']]],
+  ['Land & farms', [['Land', 'Land / Plot'], ['Farm', 'Farm'], ['Beach plot', 'Beach plot']]],
+  ['Commercial', [['Office', 'Office'], ['Shop', 'Shop'], ['Warehouse', 'Warehouse / Godown'], ['Commercial building', 'Commercial building'], ['Hotel / Lodge', 'Hotel / Lodge'], ['Guest house', 'Guest house']]],
+  ['Other', [['Other', 'Other property']]]
+];
+const TYPE_LABEL = {}, TYPE_GROUP = {};
+TYPE_GROUPS.forEach(([g, list]) => list.forEach(([v, l]) => { TYPE_LABEL[v] = l; TYPE_GROUP[v] = g; }));
+const isHome = t => (TYPE_GROUP[t] || 'Homes') === 'Homes' || t === 'Hotel / Lodge' || t === 'Guest house';
+const typeOptions = (anyLabel, selected) => (anyLabel ? `<option value="">${anyLabel}</option>` : '') +
+  TYPE_GROUPS.map(([g, list]) => `<optgroup label="${g}">${list.map(([v, l]) => `<option value="${v}"${v === selected ? ' selected' : ''}>${l}</option>`).join('')}</optgroup>`).join('');
+const PH_ART = {
+  'Land & farms': ['#f4ecd9', '#e3d3ac', '<path d="M200 330 C300 300 460 300 560 330" /><path d="M170 360 C290 325 470 325 590 360" /><path d="M140 392 C280 352 480 352 620 392" /><path d="M110 426 C270 380 490 380 650 426" /><circle cx="560" cy="170" r="42" /><path d="M150 300 L230 200 L300 270 L360 210 L470 300" />'],
+  'Commercial': ['#e8eef4', '#cfdbe6', '<rect x="250" y="150" width="150" height="250" rx="6"/><rect x="400" y="210" width="110" height="190" rx="6"/><path d="M280 190h30M340 190h30M280 240h30M340 240h30M280 290h30M340 290h30M430 250h50M430 300h50M300 400v-50h50v50"/>'],
+  'Other': ['#f3efe6', '#e2d8c4', '<path d="M230 300 L380 190 L530 300"/><path d="M270 285v115h220V285"/><path d="M350 400v-60h60v60"/>']
+};
+const PH_CACHE = {};
+function placeholderImg(type) {
+  const g = isHome(type) ? 'Other' : (TYPE_GROUP[type] || 'Other');
+  if (PH_CACHE[g]) return PH_CACHE[g];
+  const [a, b, art] = PH_ART[g];
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 760 504"><defs><linearGradient id="g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="${a}"/><stop offset="1" stop-color="${b}"/></linearGradient></defs><rect width="760" height="504" fill="url(#g)"/><g fill="none" stroke="#b8892a" stroke-width="10" stroke-linecap="round" stroke-linejoin="round" opacity=".85">${art}</g></svg>`;
+  return (PH_CACHE[g] = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg));
+}
+const photoSrc = p => p.image || (p.photo && IMG[PHOTO[p.photo]]) || placeholderImg(p.type);
+const sizeText = (v, u) => `${Number(v).toLocaleString('en-US')} ${u === 'acres' ? 'acres' : u === 'hectares' ? 'hectares' : 'm²'}`;
 
 /* ---------- data ---------- */
 const BADGE = { buy: 'For Sale', rent: 'For Rent', malazi: 'Malazi' };
@@ -45,7 +71,7 @@ function cardHTML(p, i = 0) {
   <button type="button" class="heart${favs.has(p.id) ? ' saved' : ''}" aria-label="Save ${esc(p.title)}" aria-pressed="${favs.has(p.id)}" data-save="${esc(p.id)}"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.6 5.6 0 0 0-7.9 0L12 5.5l-.9-.9a5.6 5.6 0 0 0-7.9 7.9L12 21l8.8-8.5a5.6 5.6 0 0 0 0-7.9Z"/></svg></button></div>
   <div class="card-body"><div class="card-price">${esc(p.price)}</div><button type="button" class="card-title" data-details="${esc(p.id)}">${esc(p.title)}</button>
   <div class="card-place"><span class="pin-icon">${ICON.pin}</span> ${esc(p.location)}, Dar es Salaam</div>
-  <div class="card-features"><span>${ICON.bed}${p.beds} beds</span><span>${ICON.bath}${p.baths} baths</span>${p.more ? `<span>${third}${esc(p.more)}</span>` : ''}</div>
+  <div class="card-features">${isHome(p.type) ? `<span>${ICON.bed}${p.beds} beds</span><span>${ICON.bath}${p.baths} baths</span>` : `<span class="type-chip">${esc(TYPE_LABEL[p.type] || p.type)}</span>`}${p.more ? `<span>${third}${esc(p.more)}</span>` : ''}</div>
   <button class="card-link" type="button" data-details="${esc(p.id)}">View details ${ICON.arrow}</button></div></article>`;
 }
 
@@ -169,7 +195,7 @@ document.addEventListener('click', e => {
   $('#detail-title').textContent = p.title;
   $('#detail-location').innerHTML = `<span class="modal-place">${ICON.pin}${esc(p.location)}, Dar es Salaam</span>`;
   const third = p.category === 'malazi' ? ICON.guests : ICON.area;
-  $('#detail-facts').innerHTML = `<span>${ICON.bed}${p.beds} bedrooms</span><span>${ICON.bath}${p.baths} bathrooms</span>${p.more ? `<span>${third}${esc(p.more)}</span>` : ''}<span>${esc(p.type || '')} · ${BADGE[p.category]}</span>`;
+  $('#detail-facts').innerHTML = `${isHome(p.type) ? `<span>${ICON.bed}${p.beds} bedrooms</span><span>${ICON.bath}${p.baths} bathrooms</span>` : ''}${p.more ? `<span>${third}${esc(p.more)}</span>` : ''}<span>${esc(TYPE_LABEL[p.type] || p.type || '')} · ${BADGE[p.category]}</span>`;
   $('#detail-description').textContent = p.description || 'No description provided yet.';
   $('#enquiry-btn').dataset.title = p.title; $('#enquiry-btn').dataset.id = p.id;
   openModal('detail-overlay');
@@ -244,11 +270,13 @@ $('#listing-form').addEventListener('submit', e => {
   e.preventDefault();
   const cat = $('#new-category').value, amount = +$('#new-price').value;
   const suffix = cat === 'rent' ? ' / month' : cat === 'malazi' ? ' / night' : '';
-  const beds = +$('#new-bedrooms').value || 0;
+  const type = $('#new-type').value, home = isHome(type);
+  const beds = home ? (+$('#new-bedrooms').value || 0) : 0;
+  const sizeV = +$('#new-size').value || 0, sizeU = $('#new-size-unit').value;
   const p = {
     id: 'u' + Date.now(), user: true, category: cat, title: $('#new-title').value.trim(),
-    location: $('#new-location').value, type: $('#new-type').value, beds, baths: +$('#new-bathrooms').value || 0,
-    more: cat === 'malazi' ? `${Math.max(2, beds * 2)} guests` : '', amount, price: `TSh ${fmt(amount)}${suffix}`,
+    location: $('#new-location').value, type, beds, baths: home ? (+$('#new-bathrooms').value || 0) : 0, size_value: sizeV || null, size_unit: sizeV ? sizeU : null,
+    more: cat === 'malazi' && home ? `${Math.max(2, beds * 2)} guests` : (sizeV ? sizeText(sizeV, sizeU) : ''), amount, price: `TSh ${fmt(amount)}${suffix}`,
     description: $('#new-description').value.trim(), photo: cat === 'malazi' ? 'courtyard-pool' : 'family-house', images: media.photos, image: media.photos[0] || '', video: media.video
   };
   if (window.LIVE) { LIVE.submitListing(p, media, e.target); return; }
@@ -382,3 +410,15 @@ const mapView = createMap($('#map'), area => pickArea(area), '#properties-grid')
 renderHome();
 renderMalazi();
 
+
+/* ---------- property type selects + adaptive listing form ---------- */
+$('#property-type').innerHTML = typeOptions('Any property type');
+$('#new-type').innerHTML = typeOptions('', 'House');
+function syncTypeFields() {
+  const t = $('#new-type').value, home = isHome(t);
+  $$('.res-only').forEach(r => { r.hidden = !home; });
+  $('#new-size-unit').value = TYPE_GROUP[t] === 'Land & farms' ? 'acres' : 'm2';
+}
+$('#new-type').addEventListener('change', syncTypeFields);
+$('#listing-form').addEventListener('reset', () => setTimeout(syncTypeFields, 0));
+syncTypeFields();
