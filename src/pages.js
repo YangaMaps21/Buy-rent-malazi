@@ -56,12 +56,12 @@ const CAT = {
   }
 };
 const PRICE_OPTS = {
-  buy: { min: [['', 'No minimum'], [100e6, '100 million'], [300e6, '300 million'], [500e6, '500 million'], [1e9, '1 billion']],
-         max: [['', 'No maximum'], [300e6, '300 million'], [500e6, '500 million'], [1e9, '1 billion'], [2e9, '2 billion']] },
-  rent: { min: [['', 'No minimum'], [1e6, '1 million'], [2e6, '2 million'], [3e6, '3 million']],
-          max: [['', 'No maximum'], [1.5e6, '1.5 million'], [2.5e6, '2.5 million'], [4e6, '4 million'], [7e6, '7 million']] },
-  malazi: { min: [['', 'No minimum'], [100000, '100,000'], [200000, '200,000'], [300000, '300,000']],
-            max: [['', 'No maximum'], [150000, '150,000'], [250000, '250,000'], [350000, '350,000'], [500000, '500,000']] }
+  buy: { min: [['', 'Any'], [100e6, '100 million'], [300e6, '300 million'], [500e6, '500 million'], [1e9, '1 billion']],
+         max: [['', 'Any'], [300e6, '300 million'], [500e6, '500 million'], [1e9, '1 billion'], [2e9, '2 billion']] },
+  rent: { min: [['', 'Any'], [1e6, '1 million'], [2e6, '2 million'], [3e6, '3 million']],
+          max: [['', 'Any'], [1.5e6, '1.5 million'], [2.5e6, '2.5 million'], [4e6, '4 million'], [7e6, '7 million']] },
+  malazi: { min: [['', 'Any'], [100000, '100,000'], [200000, '200,000'], [300000, '300,000']],
+            max: [['', 'Any'], [150000, '150,000'], [250000, '250,000'], [350000, '350,000'], [500000, '500,000']] }
 };
 const opts = (list, val) => list.map(([v, l]) => `<option value="${v}"${String(v) === String(val ?? '') ? ' selected' : ''}>${l}</option>`).join('');
 const sel = (id, label, html) => `<div class="field"><label for="${id}">${label}</label><select id="${id}">${html}</select></div>`;

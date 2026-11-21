@@ -156,6 +156,7 @@ const SW = {
  'Breadcrumb': 'Njia', 'Main': 'Kuu', 'Language': 'Lugha', 'e.g. Three-bedroom family home': 'mf. Nyumba ya familia ya vyumba vitatu', 'Briefly describe the property': 'Eleza mali kwa ufupi',
  'Agent or agency name': 'Jina la wakala au kampuni', 'Remove video': 'Ondoa video',
  'Indian Ocean': 'Bahari ya Hindi',
+ 'List': 'Tangaza', 'Filters': 'Vichujio', 'Map': 'Ramani', 'Show map': 'Onyesha ramani', 'Hide map': 'Ficha ramani', 'Quick navigation': 'Urambazaji wa haraka',
  'Homes': 'Makazi', 'Land & farms': 'Ardhi na mashamba', 'Commercial': 'Biashara', 'Other': 'Nyingine', 'Townhouse': 'Nyumba ya safu', 'Bungalow': 'Bangalo', 'Studio': 'Studio', 'Room': 'Chumba',
  'Land / Plot': 'Kiwanja', 'Farm': 'Shamba', 'Beach plot': 'Kiwanja cha ufukweni', 'Office': 'Ofisi', 'Shop': 'Duka', 'Warehouse / Godown': 'Ghala', 'Commercial building': 'Jengo la biashara', 'Hotel / Lodge': 'Hoteli / Loji', 'Guest house': 'Nyumba ya wageni', 'Other property': 'Mali nyingine',
  'Size': 'Ukubwa', 'Size unit': 'Kipimo', 'acres': 'ekari', 'hectares': 'hekta', 'e.g. 5': 'mf. 5', 'Any property type': 'Aina yoyote ya mali', 'Msasani Bay': 'Ghuba ya Msasani', 'City Centre': 'Katikati ya Jiji'

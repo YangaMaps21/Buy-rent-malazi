@@ -77,10 +77,10 @@ function cardHTML(p, i = 0) {
 
 /* ---------- search ---------- */
 const PRICES = {
-  buy: { min: [['', 'No minimum'], [50e6, '50 million'], [100e6, '100 million'], [300e6, '300 million'], [500e6, '500 million']],
-         max: [['', 'No maximum'], [300e6, '300 million'], [500e6, '500 million'], [1e9, '1 billion'], [2e9, '2 billion']] },
-  rent: { min: [['', 'No minimum'], [5e5, '500,000 / month'], [1e6, '1 million / month'], [2e6, '2 million / month']],
-          max: [['', 'No maximum'], [1.5e6, '1.5 million / month'], [2.5e6, '2.5 million / month'], [5e6, '5 million / month']] }
+  buy: { min: [['', 'Any'], [50e6, '50 million'], [100e6, '100 million'], [300e6, '300 million'], [500e6, '500 million']],
+         max: [['', 'Any'], [300e6, '300 million'], [500e6, '500 million'], [1e9, '1 billion'], [2e9, '2 billion']] },
+  rent: { min: [['', 'Any'], [5e5, '500,000 / month'], [1e6, '1 million / month'], [2e6, '2 million / month']],
+          max: [['', 'Any'], [1.5e6, '1.5 million / month'], [2.5e6, '2.5 million / month'], [5e6, '5 million / month']] }
 };
 let tab = 'buy';
 const grid = $('#properties-grid');

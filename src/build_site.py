@@ -104,15 +104,21 @@ s = s.replace('<p>Short stays, easy escapes and beautiful places to unwind.</p>'
               '<p><em class="sw">Malazi</em> is Swahili for accommodation: short stays, easy escapes and beautiful places to unwind.</p>', 1)
 
 # fonts (loads where the network allows; falls back cleanly in sandboxed previews)
-s = s.replace('<title>', '<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap"><title>', 1)
+# self-hosted Inter (SIL Open Font License), see fonts/LICENSE-Inter.txt
+import base64 as _fb
+FONT_W = (400, 500, 600, 700, 800)
+def fontface(src):
+    return ''.join(f"@font-face{{font-family:Inter;font-style:normal;font-weight:{w};font-display:swap;src:url({src(w)}) format('woff')}}" for w in FONT_W)
+FONT_CSS_PREVIEW = fontface(lambda w: 'data:font/woff;base64,' + _fb.b64encode(open(L + f'fonts/inter-{w}.woff', 'rb').read()).decode())
+FONT_CSS_LIVE = fontface(lambda w: f'/fonts/inter-{w}.woff')
 
 import sys; sys.path.insert(0, L)
 import extra_html
 s = extra_html.transform(s, I)
-CSS = A['css'] + open(L + 'polish.css').read() + open(L + 'pages.css').read() + open(L + 'live.css').read()
+CSS = FONT_CSS_PREVIEW + A['css'] + open(L + 'polish.css').read() + open(L + 'pages.css').read() + open(L + 'live.css').read() + open(L + 'mobile.css').read()
 s = s.replace('</style>', CSS + '</style>', 1)
 
-JS = open(L + 'site.js').read() + open(L + 'pages.js').read() + open(L + 'i18n.js').read()
+JS = open(L + 'site.js').read() + open(L + 'pages.js').read() + open(L + 'mobile.js').read() + open(L + 'i18n.js').read()
 data_js = ('const IMG=' + json.dumps({k: 'data:image/webp;base64,' + v for k, v in IMG.items()}) + ';\n'
            'const PHOTO=' + json.dumps(PHOTO) + ';\n')
 all_demo = re.search(r"const allDemo=(\[.*?\]);", open(SRC).read(), re.S).group(1)
@@ -135,6 +141,10 @@ live = s
 start = live.index('const IMG='); end = live.index(';\n', start)
 live = live[:start] + 'const IMG=' + json.dumps(urls) + live[end:]
 live = live.replace('href="#/', 'href="/')
+live = live.replace(FONT_CSS_PREVIEW, FONT_CSS_LIVE, 1)
+os.makedirs(DIST + '/fonts', exist_ok=True)
+for w in FONT_W: shutil.copy(L + f'fonts/inter-{w}.woff', f'{DIST}/fonts/inter-{w}.woff')
+shutil.copy(L + 'fonts/LICENSE-Inter.txt', DIST + '/fonts/LICENSE-Inter.txt')
 live = live.replace('<title>', '<meta name="robots" content="noindex, nofollow"><title>', 1)
 SUPA = {'url': 'https://sjudccfjcvqwehuwxqpe.supabase.co', 'key': 'sb_publishable_rYwkGpvTZGTsNCqFqCzD0w_bY7HN4F7'}
 i = live.rindex("<script>\n'use strict';")
@@ -146,6 +156,7 @@ open(DIST + '/robots.txt', 'w').write('User-agent: *\nDisallow: /\n')
 open(DIST + '/vercel.json', 'w').write(json.dumps({
     "rewrites": [{"source": "/(.*)", "destination": "/index.html"}],
   "headers": [{"source": "/(.*)", "headers": [{"key": "X-Robots-Tag", "value": "noindex, nofollow"}, {"key": "X-Content-Type-Options", "value": "nosniff"}, {"key": "Referrer-Policy", "value": "strict-origin-when-cross-origin"}]},
-              {"source": "/img/(.*)", "headers": [{"key": "Cache-Control", "value": "public, max-age=31536000, immutable"}]}]
+              {"source": "/img/(.*)", "headers": [{"key": "Cache-Control", "value": "public, max-age=31536000, immutable"}]},
+              {"source": "/fonts/(.*)", "headers": [{"key": "Cache-Control", "value": "public, max-age=31536000, immutable"}]}]
 }, indent=2))
 print('live build', len(live), 'bytes;', len(urls), 'images')
